@@ -1,8 +1,27 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet,TextInput} from 'react-native';
 import { Header } from 'react-native-elements';
+import db from '../config';
+import firebase from 'firebase';
 
 export default class TransactionScreen extends React.Component {
+    constructor(){
+        super();
+        this.state={
+            title:'',
+            author:'',
+            story:'',
+        }
+    }
+
+    submitStory = async() => {
+        var story = await db.collection('storyHub').add({
+            "title" : this.state.title,
+            "author" : this.state.author,
+            "story" : this.state.story,
+        })
+    }
+
     render(){
         return(
             <View>
@@ -23,6 +42,11 @@ export default class TransactionScreen extends React.Component {
                         fontSize: 20
                     }}
                     placeholder="Story Name"
+                    onChangeText={(text)=>{
+                        this.setState({
+                            title:text,
+                        })
+                    }}
                 />
                 <TextInput
                     style={{
@@ -34,6 +58,11 @@ export default class TransactionScreen extends React.Component {
                         fontSize: 20
                     }}
                     placeholder="Author"
+                    onChangeText={(text)=>{
+                        this.setState({
+                            author:text,
+                        })
+                    }}
                 />
                 <TextInput
                     style={{
@@ -46,6 +75,11 @@ export default class TransactionScreen extends React.Component {
                     }}
                     placeholder="Write Your Story"
                     multiline={true}
+                    onChangeText={(text)=>{
+                        this.setState({
+                           story:text,
+                        })
+                    }}
                 />
                 <TouchableOpacity
                     style={{
@@ -58,7 +92,9 @@ export default class TransactionScreen extends React.Component {
                     alignItems: 'center',
                     marginLeft:130,
                     marginTop:20,
-                }}>
+                    }}
+                    onPress={this.submitStory}
+                >
                     <Text style={{fontSize:20,color:'white',}}>
                         Submit
                     </Text>
