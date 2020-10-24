@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet,TextInput} from 'react-native';
+import { Text,  TouchableOpacity, StyleSheet,TextInput, KeyboardAvoidingView, Alert} from 'react-native';
 import { Header } from 'react-native-elements';
 import db from '../config';
 import firebase from 'firebase';
@@ -20,11 +20,12 @@ export default class TransactionScreen extends React.Component {
             "author" : this.state.author,
             "story" : this.state.story,
         })
+        Alert.alert("Book Is Registered");
     }
 
     render(){
         return(
-            <View>
+            <KeyboardAvoidingView behavior="padding" enabled>
                 <Header 
                     backgroundColor={'pink'}
                     centerComponent={{
@@ -99,7 +100,7 @@ export default class TransactionScreen extends React.Component {
                         Submit
                     </Text>
                 </TouchableOpacity>
-            </View>
+            </KeyboardAvoidingView>
         )
     }
 }
