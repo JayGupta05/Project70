@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View,Text} from 'react-native';
+import {View,Text,TouchableOpacity} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import db from '../config';
 import firebase from 'firebase';
@@ -11,26 +11,47 @@ export default class Search extends React.Component{
     this.state={
       search:"",
       allStories:[],
+      lastVisibleDoc:"",
     }
   }
 
-  componentDidMount(){
+  componentDidMount = async() => {
     this.retriveStories();
+    const query = await db.collection('storyHub').limit(10).get();
+    query.docs.map((doc)=>{
+      this.setState({
+        allTransaction:[],
+        lastVisibleDoc:doc,
+      })
+    })
   }
 
   retriveStories = async() => {
-    console.log("Retrieve Stories")
+    console.log("Retrieve Stories");
     const allStories = await db.collection('storyHub').get();
     allStories.docs.map((doc)=>{
       this.setState({
         allStories:[...this.state.allStories,doc.data()],
+        lastVisibleDoc:doc,
       })
-      console.log(this.state.allStories)
+      console.log(this.state.search);
     })
   }
 
-  searchStory = async() => {
-    
+  searchStory = async(text) => {
+    var entertext = text;
+    this.setState({
+      allStories:[],
+    })
+    if(entertext===this.state.search){
+      const search = await db.collection('storyHub').where('title','==',text).get();
+      search.docs.map((doc)=>{
+        this.setState({
+          allStories:[...this.state.allStories,doc.data()],
+          lastVisibleDoc:doc,
+        })
+      })
+    }
   }
 
   render(){
@@ -43,10 +64,27 @@ export default class Search extends React.Component{
           }}
           value={this.state.search}
         />
+        <TouchableOpacity
+          style={{
+            borderWidth:1,
+            height:50,
+            width:100,
+            alignItems:'center',
+            justifyContent:'center',
+            backgroundColor:'grey',
+            marginLeft:125,
+            marginTop:10,
+          }}
+          onPress={()=>{
+            this.searchStory(this.state.search);
+          }}
+        >
+          <Text style={{color:'white', fontSize:20,}}>Search</Text>
+        </TouchableOpacity>
         <FlatList
           data={this.state.allStories}
           renderItem={({item})=>(
-            <View>
+            <View style={{borderBottomWidth:2, marginTop:10}}>
                 <Text>{'Author:' + item.author}</Text> 
                 <Text>{'Title:' + item.title}</Text> 
                 <Text>{'Story:' + item.story}</Text> 
