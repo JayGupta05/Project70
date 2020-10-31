@@ -14,12 +14,18 @@ export default class Search extends React.Component{
     }
   }
 
+  componentDidMount(){
+    this.retriveStories();
+  }
+
   retriveStories = async() => {
+    console.log("Retrieve Stories")
     const allStories = await db.collection('storyHub').get();
-    allStories.docs.map(()=>{
+    allStories.docs.map((doc)=>{
       this.setState({
-        allStories:[this.state.allStories,doc.data()],
+        allStories:[...this.state.allStories,doc.data()],
       })
+      console.log(this.state.allStories)
     })
   }
 
