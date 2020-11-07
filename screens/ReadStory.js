@@ -16,7 +16,6 @@ export default class Search extends React.Component{
   }
 
   componentDidMount = async() => {
-    this.retriveStories();
     const query = await db.collection('storyHub').limit(10).get();
     query.docs.map((doc)=>{
       this.setState({
@@ -27,8 +26,9 @@ export default class Search extends React.Component{
   }
 
   retriveStories = async() => {
+    var text = this.state.search
     console.log("Retrieve Stories");
-    const allStories = await db.collection('storyHub').get();
+    const allStories = await db.collection('storyHub').where('title','==',text).startAfter(this.state.lastVisibleDoc).limit(10).get();
     allStories.docs.map((doc)=>{
       this.setState({
         allStories:[...this.state.allStories,doc.data()],
@@ -43,15 +43,13 @@ export default class Search extends React.Component{
     this.setState({
       allStories:[],
     })
-    if(entertext===this.state.search){
-      const search = await db.collection('storyHub').where('title','==',text).get();
-      search.docs.map((doc)=>{
-        this.setState({
-          allStories:[...this.state.allStories,doc.data()],
-          lastVisibleDoc:doc,
-        })
+    const search = await db.collection('storyHub').where('title','==',text).get();
+    search.docs.map((doc)=>{
+      this.setState({
+        allStories:[...this.state.allStories,doc.data()],
+        lastVisibleDoc:doc,
       })
-    }
+    })
   }
 
   render(){
